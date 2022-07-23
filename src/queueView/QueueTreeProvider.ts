@@ -14,8 +14,8 @@ export class QueueTreeProvider
   constructor() {}
 
   refresh(): void {
-    this._onDidChangeTreeData.fire();
-  }
+		this._onDidChangeTreeData.fire();
+	}
 
   getTreeItem(element: QueueTreeItem): vscode.TreeItem {
     return element;

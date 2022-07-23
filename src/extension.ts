@@ -15,6 +15,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(MQExplorePanel.viewId, explorerPanel));
 
+	vscode.commands.registerCommand(`${QueueTreeProvider.viewId}.addEntry`, () => vscode.window.showInformationMessage(`Successfully called add entry.`));
+	vscode.commands.registerCommand(`${QueueTreeProvider.viewId}.refresh`, () => queueTreeProvider.refresh());
+
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "message-queue-explorer" is now active!');

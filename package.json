@@ -21,8 +21,16 @@
 				"title": "Hello World"
 			},
 			{
-				"command": "message-queue-explorer.addConnection",
+				"command": "message-queue-explorer.queueTreeView.addEntry",
 				"title": "Add Connection"
+			},
+			{
+				"command": "message-queue-explorer.queueTreeView.refresh",
+				"title": "Refresh",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
 			}
 		],
 		"viewsContainers": {
@@ -38,7 +46,7 @@
 			"message-queue-explorer": [
 				{
 					"type": "tree",
-					"id":"message-queue-explorer.queueTreeView",
+					"id": "message-queue-explorer.queueTreeView",
 					"name": "Message Queue Explorer"
 				},
 				{
@@ -52,9 +60,22 @@
 		"viewsWelcome": [
 			{
 				"view": "message-queue-explorer",
-				"contents": "No connections found.\n[Add Connection](command:message-queue-explorer.addConnection)"
+				"contents": "No connections found.\n[Add Connection](command:message-queue-explorer.queueTreeView.addEntry)"
 			}
-		]
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "message-queue-explorer.queueTreeView.addEntry",
+					"when": "view == message-queue-explorer.queueTreeView"
+				},
+				{
+					"command": "message-queue-explorer.queueTreeView.refresh",
+					"when": "view == message-queue-explorer.queueTreeView",
+					"group": "navigation"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
