@@ -8,12 +8,12 @@ import {
 
 export class ChannelTreeItem extends MQTreeItem {
   constructor(
-    public name: string,
-    public status: ChannelStatus,
-    public channelType: ChannelType,
+    public readonly name: string,
+    public readonly status: ChannelStatus,
+    public readonly channelType: ChannelType,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public deadLetterMessageCount?: number,
-    public totalMessageCount?: number
+    public readonly deadLetterMessageCount?: number,
+    public readonly totalMessageCount?: number
   ) {
     const label = `${name} (${totalMessageCount === undefined ? '' : totalMessageCount}/${
       deadLetterMessageCount === undefined ? '' : deadLetterMessageCount

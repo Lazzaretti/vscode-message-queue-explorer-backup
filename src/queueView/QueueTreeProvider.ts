@@ -5,6 +5,7 @@ import { ConnectionTreeItem } from "./items/ConnectionTreeItem";
 import { MQTreeItem } from "./items/MQTreeItem";
 import { ChannelTreeItem } from "./items/ChannelTreeItem";
 import { IChannel } from "../logic/connections/models/IChannel";
+import { ChannelLeafItem } from "./items/ChannelLeafItem";
 
 export class QueueTreeProvider implements vscode.TreeDataProvider<MQTreeItem> {
   public static readonly viewId = "message-queue-explorer.queueTreeView";
@@ -34,6 +35,17 @@ export class QueueTreeProvider implements vscode.TreeDataProvider<MQTreeItem> {
               connectionElement.connectionId
             );
           return channels.map((c) => this.mapChannelItem(c));
+        case "ChannelTreeItem":
+          const channel = element as ChannelTreeItem;
+          switch (channel.channelType) {
+            case "Queue":
+              return [
+                new ChannelLeafItem("Queue", "Normal", channel.name),
+                new ChannelLeafItem("Queue", "DeadLetter", channel.name),
+              ];
+            default:
+              return [];
+          }
         default:
           return [];
       }
@@ -55,9 +67,11 @@ export class QueueTreeProvider implements vscode.TreeDataProvider<MQTreeItem> {
       item.name,
       item.status,
       item.channelType,
-      vscode.TreeItemCollapsibleState.Collapsed,
+      item.channelType === "Queue"
+        ? vscode.TreeItemCollapsibleState.Collapsed
+        : vscode.TreeItemCollapsibleState.None,
       item.totalMessageCount,
-      item.deadLetterMessageCount,
+      item.deadLetterMessageCount
     );
   }
 }
