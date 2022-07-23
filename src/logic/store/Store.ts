@@ -17,6 +17,11 @@ export class Store {
     return JSON.parse(stringified);
   }
 
+  getConnectionById(id: string): IConnection {
+    const connections = this.getConnections();
+    return connections.filter((c) => c.id === id)[0];
+  }
+
   private saveConnections(connections: IConnection[]) {
     const stringified = JSON.stringify(connections);
     this.state.update(Store.keyConnection, stringified);

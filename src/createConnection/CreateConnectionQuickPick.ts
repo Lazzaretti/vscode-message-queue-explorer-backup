@@ -1,8 +1,9 @@
 
 import { window } from "vscode";
 import * as vscode from 'vscode';
-import { ServiceBusService } from "../logic/serviceBus/ServiceBusService";
+import { ServiceBusService } from "../logic/connections/implementations/ServiceBusService";
 import { Store } from "../logic/store/Store";
+import {v4 as uuidv4} from 'uuid';
 
 export async function createConnectionQuickPick(store: Store) {
   const selection = await window.showQuickPick([
@@ -16,9 +17,15 @@ export async function createConnectionQuickPick(store: Store) {
         if (connectionString) {
             vscode.window.withProgress({title: 'try to connect..',location: vscode.ProgressLocation.Notification,}, async () => {
             try{
-                const service = new ServiceBusService(store);
-                const name = await service.validateAndSaveConnection(connectionString);
-                vscode.window.showInformationMessage(`connected successful to ${name}`);
+                const service = new ServiceBusService(connectionString);
+                const data = await service.getSaveableConnection();
+                store.saveNewConnection({
+                        type: "ServiceBusConnectionString",
+                        id: uuidv4(),
+                        name: data.name,
+                        data: data.data,
+                });
+                vscode.window.showInformationMessage(`connected successful to ${data.name}`);
             }
             catch{
                 vscode.window.showErrorMessage("failed to connect");
