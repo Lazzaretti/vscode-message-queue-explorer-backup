@@ -1,18 +1,18 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { MQItem } from './MQItem';
 
-export class QueueTreeItem extends vscode.TreeItem {
+export class QueueTreeItem extends MQItem {
 
 	constructor(
 		public readonly label: string,
-		private readonly version: string,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
 		public readonly command?: vscode.Command
 	) {
 		super(label, collapsibleState);
 
-		this.tooltip = `${this.label}-${this.version}`;
-		this.description = this.version;
+		this.tooltip = `${this.label}`;
+		this.description = '';
 	}
 
 	iconPath = {

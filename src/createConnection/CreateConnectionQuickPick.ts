@@ -1,8 +1,10 @@
-import { ServiceBusClient } from "@azure/service-bus";
-import { window, commands, ExtensionContext } from "vscode";
-import * as vscode from 'vscode';
 
-export async function createConnectionQuickPick() {
+import { window } from "vscode";
+import * as vscode from 'vscode';
+import { ServiceBusService } from "../logic/serviceBus/ServiceBusService";
+import { Store } from "../logic/store/Store";
+
+export async function createConnectionQuickPick(store: Store) {
   const selection = await window.showQuickPick([
     {
       label: "Service Bus with Connection String",
@@ -14,9 +16,8 @@ export async function createConnectionQuickPick() {
         if (connectionString) {
             vscode.window.withProgress({title: 'try to connect..',location: vscode.ProgressLocation.Notification,}, async () => {
             try{
-                const serviceBusClient = new ServiceBusClient(connectionString);
-                const name = serviceBusClient.fullyQualifiedNamespace;
-                await serviceBusClient.close();
+                const service = new ServiceBusService(store);
+                const name = await service.validateAndSaveConnection(connectionString);
                 vscode.window.showInformationMessage(`connected successful to ${name}`);
             }
             catch{

@@ -4,12 +4,16 @@ import * as vscode from 'vscode';
 import { MQExplorePanel } from './panels/MQExplorePanel';
 import { QueueTreeProvider } from './queueView/QueueTreeProvider';
 import { createConnectionQuickPick } from './createConnection/CreateConnectionQuickPick';
+import { Store } from './logic/store/Store';
+import { ConnectionFacade } from './facade/ConnectionFacade';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	const store = new Store(context.globalState);
+	const connectionFacade = new ConnectionFacade(store);
 
-	const queueTreeProvider = new QueueTreeProvider();
+	const queueTreeProvider = new QueueTreeProvider(connectionFacade);
 	vscode.window.registerTreeDataProvider(QueueTreeProvider.viewId, queueTreeProvider);
 
 	const explorerPanel = new MQExplorePanel(context.extensionUri);
@@ -18,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	vscode.commands.registerCommand(`${QueueTreeProvider.viewId}.refresh`, () => queueTreeProvider.refresh());
 
-	context.subscriptions.push(vscode.commands.registerCommand('message-queue-explorer.addConnection', createConnectionQuickPick));
+	context.subscriptions.push(vscode.commands.registerCommand('message-queue-explorer.addConnection', () => createConnectionQuickPick(store)));
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
