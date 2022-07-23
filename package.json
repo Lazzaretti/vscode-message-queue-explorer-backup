@@ -1,5 +1,5 @@
 {
-  "name": "message-queue-explorer",
+	"name": "message-queue-explorer",
 	"displayName": "Message Queue Explorer",
 	"description": "Tool to view and interact with message queues.",
 	"version": "0.0.1",
@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:message-queue-explorer.helloWorld"
+		"onView:message-queue-explorer.queueTreeView",
+		"onCommand:message-queue-explorer.helloWorld"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -18,26 +19,42 @@
 			{
 				"command": "message-queue-explorer.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "message-queue-explorer.addConnection",
+				"title": "Add Connection"
 			}
 		],
 		"viewsContainers": {
 			"activitybar": [
 				{
-				  "id": "message-queue-explorer",
-				  "title": "Message Queue Explorer",
-				  "icon": "resources/MQ.svg"
+					"id": "message-queue-explorer",
+					"title": "Message Queue Explorer",
+					"icon": "resources/MQ.svg"
 				}
 			]
 		},
 		"views": {
 			"message-queue-explorer": [
 				{
+					"type": "tree",
+					"id":"message-queue-explorer.queueTreeView",
+					"name": "Message Queue Explorer"
+				},
+				{
 					"type": "webview",
 					"id": "message-queue-explorer.explorView",
-					"name": "Message Queue Explorer"
+					"name": "Message Queue Explorer Detail",
+					"when": "0 == 1"
 				}
 			]
-		}
+		},
+		"viewsWelcome": [
+			{
+				"view": "message-queue-explorer",
+				"contents": "No connections found.\n[Add Connection](command:message-queue-explorer.addConnection)"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",

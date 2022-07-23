@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 export class MQExplorePanel implements vscode.WebviewViewProvider {
-  public static readonly viewType = "message-queue-explorer.explorView";
+  public static readonly viewId = "message-queue-explorer.explorView";
 
   private _view?: vscode.WebviewView;
 
