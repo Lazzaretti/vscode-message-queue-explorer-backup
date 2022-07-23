@@ -19,7 +19,25 @@
 				"command": "message-queue-explorer.helloWorld",
 				"title": "Hello World"
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+				  "id": "message-queue-explorer",
+				  "title": "Message Queue Explorer",
+				  "icon": "resources/MQ.svg"
+				}
+			]
+		},
+		"views": {
+			"message-queue-explorer": [
+				{
+					"type": "webview",
+					"id": "message-queue-explorer.explorView",
+					"name": "Message Queue Explorer"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
