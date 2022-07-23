@@ -21,7 +21,7 @@
 				"title": "Hello World"
 			},
 			{
-				"command": "message-queue-explorer.queueTreeView.addEntry",
+				"command": "message-queue-explorer.addConnection",
 				"title": "Add Connection"
 			},
 			{
@@ -60,13 +60,13 @@
 		"viewsWelcome": [
 			{
 				"view": "message-queue-explorer",
-				"contents": "No connections found.\n[Add Connection](command:message-queue-explorer.queueTreeView.addEntry)"
+				"contents": "No connections found.\n[Add Connection](command:message-queue-explorer.addConnection)"
 			}
 		],
 		"menus": {
 			"view/title": [
 				{
-					"command": "message-queue-explorer.queueTreeView.addEntry",
+					"command": "message-queue-explorer.addConnection",
 					"when": "view == message-queue-explorer.queueTreeView"
 				},
 				{
