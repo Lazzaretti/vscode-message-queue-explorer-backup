@@ -34,14 +34,14 @@ export class QueueTreeProvider implements vscode.TreeDataProvider<MQTreeItem> {
             await this.connectionFacade.getChannelsByConnectionId(
               connectionElement.connectionId
             );
-          return channels.map((c) => this.mapChannelItem(c));
+          return channels.map((c) => this.mapChannelItem(connectionElement.connectionId, c));
         case "ChannelTreeItem":
           const channel = element as ChannelTreeItem;
           switch (channel.channelType) {
             case "Queue":
               return [
-                new ChannelLeafItem("Queue", "Normal", channel.name),
-                new ChannelLeafItem("Queue", "DeadLetter", channel.name),
+                new ChannelLeafItem(channel.connectionId,"Queue", "Normal", channel.name),
+                new ChannelLeafItem(channel.connectionId, "Queue", "DeadLetter", channel.name),
               ];
             default:
               return [];
@@ -62,8 +62,9 @@ export class QueueTreeProvider implements vscode.TreeDataProvider<MQTreeItem> {
       vscode.TreeItemCollapsibleState.Collapsed
     );
   }
-  mapChannelItem(item: IChannel): MQTreeItem {
+  mapChannelItem(connectionId: string, item: IChannel): MQTreeItem {
     return new ChannelTreeItem(
+      connectionId,
       item.name,
       item.status,
       item.channelType,

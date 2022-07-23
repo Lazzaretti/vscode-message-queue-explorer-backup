@@ -31,6 +31,11 @@
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"
 				}
+			},
+			{
+				"command": "message-queue-explorer.openQueue",
+				"title": "Open Queue",
+				"enablement": "0 == 1"
 			}
 		],
 		"viewsContainers": {
@@ -51,8 +56,8 @@
 				},
 				{
 					"type": "webview",
-					"id": "message-queue-explorer.explorView",
-					"name": "Message Queue Explorer Detail",
+					"id": "message-queue-explorer.messages",
+					"name": "Messages",
 					"when": "0 == 1"
 				}
 			]

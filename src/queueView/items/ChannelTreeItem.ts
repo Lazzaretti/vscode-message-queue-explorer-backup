@@ -8,6 +8,7 @@ import {
 
 export class ChannelTreeItem extends MQTreeItem {
   constructor(
+    public readonly connectionId: string,
     public readonly name: string,
     public readonly status: ChannelStatus,
     public readonly channelType: ChannelType,
