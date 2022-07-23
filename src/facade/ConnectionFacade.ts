@@ -3,7 +3,7 @@ import { ConnectionType, IConnection } from "../logic/store/IConnection";
 import { Store } from "../logic/store/Store";
 import { IConnectionItem, ProviderType } from "./models/IConnectionItem";
 import { assertUnreachable } from "../helpers";
-import { IChannel } from "../logic/connections/models/IChannel";
+import { IChannel, QueueSubType } from "../logic/connections/models/IChannel";
 import { IMessage } from "../logic/models/IMessage";
 
 export class ConnectionFacade {
@@ -14,8 +14,10 @@ export class ConnectionFacade {
     return await activeConnection.getChannels();
   }
 
-  getMessages(connectionId: string, name: string, queueSubType: string): IMessage[] {
-    return [{body: "test"}];
+  async getMessages(connectionId: string, name: string, queueSubType: QueueSubType): Promise<IMessage[]> {
+    const activeConnection = this.connectionPool.getByConnectionId(connectionId);
+    const messages = await activeConnection.peekMessages(name, queueSubType);
+    return messages;
   }
 
   getConnections(): IConnectionItem[] {

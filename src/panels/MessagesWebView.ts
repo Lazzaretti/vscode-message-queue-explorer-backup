@@ -17,6 +17,7 @@ export class MessagesWebView {
   private args?: IMessagesPanelArgs;
   private disposables: vscode.Disposable[] = [];
   private messages: IMessage[] = [];
+  private isLoading = true;
 
   constructor(private connectionFacade: ConnectionFacade) {}
 
@@ -54,11 +55,13 @@ export class MessagesWebView {
       return;
     }
 
-    this.messages = this.connectionFacade.getMessages(
+    this.messages = await this.connectionFacade.getMessages(
       this.args.connectionId,
       this.args.name,
       this.args.queueSubType
     );
+
+    this.isLoading = false;
     this.updateView();
   }
 
@@ -72,7 +75,12 @@ export class MessagesWebView {
     const webview = this.panel.webview;
 
     const content = this.messages.map(
-      (m) => `<div class="body">${this.escape(m.body)}</div>`
+      (m) => /*html*/ `
+        <div class="messageId">${this.escapeToString(m.messageId)}</div>
+        <div class="contentType">${this.escapeToString(m.contentType)}</div>
+        <div class="subject">${this.escapeToString(m.subject)}</div>
+        <div class="body">${this.escapeToString(m.body)}</div>
+      `
     );
 
     webview.html = /*html*/ `
@@ -85,6 +93,7 @@ export class MessagesWebView {
         </head>
         <body>
           <h1>${title}</h1>
+          ${this.isLoading ? "<h2>loading...</h2>" : ""}
           <article>
             ${content}
           </article>
@@ -93,8 +102,14 @@ export class MessagesWebView {
     `;
   }
 
-  private escape(htmlStr: string) {
-    return htmlStr
+  private escapeToString(input?: any): string {
+    if (!input) {
+      return "";
+    }
+    if(typeof input !== 'string'){
+      input = JSON.stringify(input);
+    }
+    return input
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")

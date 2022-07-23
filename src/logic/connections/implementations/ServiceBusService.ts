@@ -6,8 +6,9 @@ import {
   ServiceBusClient,
   TopicProperties,
 } from "@azure/service-bus";
+import { IMessage } from "../../models/IMessage";
 import { IActiveConnection } from "../models/IActiveConnection";
-import { IChannel } from "../models/IChannel";
+import { IChannel, QueueSubType } from "../models/IChannel";
 import { ISavableResponse } from "../models/ISavableResponse";
 
 export class ServiceBusService implements IActiveConnection {
@@ -85,6 +86,18 @@ export class ServiceBusService implements IActiveConnection {
       return [];
     }
     return [item.value, ...(await this.getItemsFromIterator(iterator))];
+  }
+
+  async peekMessages(
+    queueName: string,
+    queueSubType: QueueSubType,
+    amount = 50,
+  ): Promise<IMessage[]> {
+    const receiver = this.serviceBusClient.createReceiver(queueName, {
+      subQueueType: queueSubType === "DeadLetter" ? "deadLetter" : undefined,
+    });
+    const messages = await receiver.peekMessages(amount);
+    return messages.map(m => ({messageId: m.messageId?.toString(), contentType: m.contentType, subject: m.subject, body: m.body}));
   }
 
   async close() {

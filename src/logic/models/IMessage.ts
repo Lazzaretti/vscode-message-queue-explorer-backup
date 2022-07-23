@@ -1,3 +1,6 @@
 export interface IMessage {
-    body: string;
+    messageId?: string;
+    contentType?: string;
+    subject?: string;
+    body?: string;
 }
