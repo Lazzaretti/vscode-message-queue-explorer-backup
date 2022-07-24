@@ -5,15 +5,15 @@ export class ConnectionTreeItem extends MQTreeItem {
   constructor(
     public readonly connectionId: string,
     public readonly name: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
+    public collapsibleState: vscode.TreeItemCollapsibleState
   ) {
-	const label = `${name}`;
+    const label = `${name}`;
     super(label, collapsibleState);
 
-	this.iconPath = new vscode.ThemeIcon('plug');
     this.tooltip = label;
     this.description = "";
   }
 
   contextValue = "ConnectionItem";
+  iconPath = new vscode.ThemeIcon("plug");
 }

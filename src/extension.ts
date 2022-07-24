@@ -51,6 +51,20 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
+      "message-queue-explorer.disconnectConnection",
+      async (item) => {
+        if (item instanceof ConnectionTreeItem) {
+          await connectionFacade.closeConnection(item.connectionId);
+          return vscode.commands.executeCommand(
+            "message-queue-explorer.queueTreeView.refresh"
+          );
+        }
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
       "message-queue-explorer.deleteConnection",
       async (item) => {
         if (item instanceof ConnectionTreeItem) {

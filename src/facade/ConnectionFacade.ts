@@ -28,7 +28,7 @@ export class ConnectionFacade {
       id: c.id,
       name: c.name,
       providerType: this.mapType(c.type),
-      conectionType: c.type,
+      conectionType: c.type
     }));
   }
 

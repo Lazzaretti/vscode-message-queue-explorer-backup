@@ -32,6 +32,12 @@
 				"category": "Connections",
 				"title": "Delete Connection",
 				"icon": "$(trash)"
+			},
+			{
+				"command": "message-queue-explorer.disconnectConnection",
+				"category": "Connections",
+				"title": "Disconnect Connection",
+				"icon": "$(debug-disconnect)"
 			}
 		],
 		"viewsContainers": {
@@ -73,6 +79,10 @@
 			"view/item/context": [
 				{
 					"command": "message-queue-explorer.deleteConnection",
+					"when": "view == message-queue-explorer.queueTreeView && viewItem == ConnectionItem"
+				},
+				{
+					"command": "message-queue-explorer.disconnectConnection",
 					"when": "view == message-queue-explorer.queueTreeView && viewItem == ConnectionItem",
 					"group": "inline"
 				}
