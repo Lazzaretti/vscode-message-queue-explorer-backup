@@ -12,16 +12,11 @@
 		"Testing"
 	],
 	"activationEvents": [
-		"onView:message-queue-explorer.queueTreeView",
-		"onCommand:message-queue-explorer.helloWorld"
+		"onView:message-queue-explorer.queueTreeView"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
-			{
-				"command": "message-queue-explorer.helloWorld",
-				"title": "Hello World"
-			},
 			{
 				"command": "message-queue-explorer.addConnection",
 				"title": "Add Connection"
