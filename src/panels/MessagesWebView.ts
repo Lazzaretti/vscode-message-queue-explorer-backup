@@ -20,7 +20,10 @@ export class MessagesWebView {
   private messages: IMessage[] = [];
   private isLoading = true;
 
-  constructor(private connectionFacade: ConnectionFacade, private extensionUri: vscode.Uri) {}
+  constructor(
+    private connectionFacade: ConnectionFacade,
+    private extensionUri: vscode.Uri
+  ) {}
 
   public open(args: IMessagesPanelArgs) {
     this.args = args;
@@ -40,11 +43,36 @@ export class MessagesWebView {
     this.panel.webview.onDidReceiveMessage((data) => {
       switch (data.command) {
         case "requeue": {
-          this.connectionFacade.executeCommandOnMessage("Requeue", args.connectionId, args.name, data.messageId)
-          .then(() => vscode.window.showInformationMessage("requeued message"))
-          .catch(e => vscode.window.showErrorMessage("Requeue failed: " + JSON.stringify(e)));
+          this.connectionFacade
+            .executeCommandOnMessage(
+              "Requeue",
+              args.connectionId,
+              args.name,
+              data.messageId
+            )
+            .then(() =>
+              vscode.window.showInformationMessage("requeued message")
+            )
+            .catch((e) =>
+              vscode.window.showErrorMessage(
+                "Requeue failed: " + JSON.stringify(e)
+              )
+            );
           break;
         }
+        case "open-body":
+          const message = this.messages.filter(
+            (x) => x.messageId === data.messageId
+          )[0];
+          vscode.workspace
+            .openTextDocument({
+              language: "json",
+              content: JSON.stringify(message.body),
+            })
+            .then((document) => {
+              vscode.window.showTextDocument(document);
+            });
+          break;
       }
     });
 
@@ -82,20 +110,36 @@ export class MessagesWebView {
       "dist",
       "toolkit.js", // A toolkit.min.js file is also available
     ]);
-    const mainUri = getUri(webview, this.extensionUri, ["webview-ui", "main.js"]);
-    const styleUri = getUri(webview, this.extensionUri, ["webview-ui", "style.css"]);
+    const mainUri = getUri(webview, this.extensionUri, [
+      "webview-ui",
+      "main.js",
+    ]);
+    const styleUri = getUri(webview, this.extensionUri, [
+      "webview-ui",
+      "style.css",
+    ]);
 
-    const content = this.messages.map(
-      (m) => /*html*/ `
+    const content = this.messages
+      .map(
+        (m) => /*html*/ `
         <div class="msg">
-          <vscode-text-field class="msg-header" value="${this.escapeToString(m.messageId)}" disabled>messageId</vscode-text-field>
-          <vscode-text-field class="msg-header" value="${this.escapeToString(m.contentType)}" disabled>contentType</vscode-text-field>
-          <vscode-text-field class="msg-header" value="${this.escapeToString(m.subject)}" disabled>subject</vscode-text-field>
+          <vscode-text-field class="msg-header" value="${this.escapeToString(
+            m.messageId
+          )}" disabled>messageId</vscode-text-field>
+          <vscode-text-field class="msg-header" value="${this.escapeToString(
+            m.contentType
+          )}" disabled>contentType</vscode-text-field>
+          <vscode-text-field class="msg-header" value="${this.escapeToString(
+            m.subject
+          )}" disabled>subject</vscode-text-field>
           <div class="msg-action">${this.getActionsHtml(m)}</div>
-          <vscode-text-field class="msg-body" value="${this.escapeToString(m.body)}" disabled>body</vscode-text-field>
+          <vscode-text-field class="msg-body" value="${this.escapeToString(
+            m.body
+          )}" disabled>body</vscode-text-field>
         </div>
       `
-    ).join('');
+      )
+      .join("");
 
     webview.html = /*html*/ `
       <!DOCTYPE html>
@@ -119,20 +163,26 @@ export class MessagesWebView {
     `;
   }
 
-  private getActionsHtml(m: IMessage){
+  private getActionsHtml(m: IMessage) {
+    let actions = "";
     if (m.messageId) {
-      if (this.args?.queueSubType === "DeadLetter"){
-        return `<vscode-button class="btn-requeue" data-message-id="${this.escapeToString(m.messageId)}">Requeue</vscode-button>`;
+      if (this.args?.queueSubType === "DeadLetter") {
+        actions += `<vscode-button class="btn-requeue" data-message-id="${this.escapeToString(
+          m.messageId
+        )}">Requeue</vscode-button>`;
       }
+      actions += `<vscode-button class="btn-open-body" data-message-id="${this.escapeToString(
+        m.messageId
+      )}">Open</vscode-button>`;
     }
-    return '';
+    return actions;
   }
 
   private escapeToString(input?: any): string {
     if (!input) {
       return "";
     }
-    if(typeof input !== 'string'){
+    if (typeof input !== "string") {
       input = JSON.stringify(input);
     }
     return input
