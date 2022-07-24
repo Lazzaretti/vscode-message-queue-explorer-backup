@@ -8,7 +8,6 @@ import { IChannel } from "../logic/connections/models/IChannel";
 import { ChannelLeafItem } from "./items/ChannelLeafItem";
 
 export class QueueTreeProvider implements vscode.TreeDataProvider<MQTreeItem> {
-  public static readonly viewId = "message-queue-explorer.queueTreeView";
   private _onDidChangeTreeData: vscode.EventEmitter<
     MQTreeItem | undefined | void
   > = new vscode.EventEmitter<MQTreeItem | undefined | void>();

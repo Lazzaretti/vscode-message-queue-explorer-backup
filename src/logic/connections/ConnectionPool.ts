@@ -16,4 +16,14 @@ export class ConnectionPool {
         this.connections.set(id, newConnection);
         return newConnection;
     }
+
+    async closeConnectionIfOpen(connectionId: string) {
+        const connection = this.connections.get(connectionId);
+        if(!connection){
+            return;
+        }
+
+        this.connections.delete(connectionId);
+        await connection.close();
+    }
 }

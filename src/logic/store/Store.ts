@@ -22,6 +22,12 @@ export class Store {
     return connections.filter((c) => c.id === id)[0];
   }
 
+  deleteConnection(connectionId: string) {
+    let connections = this.getConnections();
+    connections = connections.filter((c) => c.id !== connectionId);
+    this.saveConnections(connections);
+  }
+
   private saveConnections(connections: IConnection[]) {
     const stringified = JSON.stringify(connections);
     this.state.update(Store.keyConnection, stringified);

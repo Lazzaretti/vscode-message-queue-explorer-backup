@@ -32,6 +32,15 @@ export class ConnectionFacade {
     }));
   }
 
+  async removeConnection(connectionId: string) {
+    await this.closeConnection(connectionId);
+    await this.store.deleteConnection(connectionId);
+  }
+
+  async closeConnection(connectionId: string) {
+	  await this.connectionPool.closeConnectionIfOpen(connectionId);
+  }
+
   async executeCommandOnMessage(messageCommand: IMessageCommand, connectionId: string, channelName: string, messageId: string) {
     const activeConnection = this.connectionPool.getByConnectionId(connectionId);
     await activeConnection.executeCommandOnMessage(messageCommand, channelName, messageId);

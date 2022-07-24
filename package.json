@@ -28,6 +28,12 @@
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"
 				}
+			},
+			{
+				"command": "message-queue-explorer.deleteConnection",
+				"category": "Connections",
+				"title": "Delete Connection",
+				"icon": "$(trash)"
 			}
 		],
 		"viewsContainers": {
@@ -64,6 +70,13 @@
 					"command": "message-queue-explorer.queueTreeView.refresh",
 					"when": "view == message-queue-explorer.queueTreeView",
 					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "message-queue-explorer.deleteConnection",
+					"when": "view == message-queue-explorer.queueTreeView && viewItem == ConnectionItem",
+					"group": "inline"
 				}
 			]
 		}
