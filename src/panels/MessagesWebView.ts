@@ -1,6 +1,7 @@
 import exp = require("constants");
 import * as vscode from "vscode";
 import { ConnectionFacade } from "../facade/ConnectionFacade";
+import { getUri } from "../helpers";
 import { QueueSubType } from "../logic/connections/models/IChannel";
 import { IMessage } from "../logic/models/IMessage";
 
@@ -19,7 +20,7 @@ export class MessagesWebView {
   private messages: IMessage[] = [];
   private isLoading = true;
 
-  constructor(private connectionFacade: ConnectionFacade) {}
+  constructor(private connectionFacade: ConnectionFacade, private extensionUri: vscode.Uri) {}
 
   public open(args: IMessagesPanelArgs) {
     this.args = args;
@@ -74,12 +75,24 @@ export class MessagesWebView {
     this.panel.title = title;
     const webview = this.panel.webview;
 
+    const toolkitUri = getUri(webview, this.extensionUri, [
+      "node_modules",
+      "@vscode",
+      "webview-ui-toolkit",
+      "dist",
+      "toolkit.js", // A toolkit.min.js file is also available
+    ]);
+    const styleUri = getUri(webview, this.extensionUri, ["webview-ui", "style.css"]);
+
     const content = this.messages.map(
       (m) => /*html*/ `
-        <div class="messageId">${this.escapeToString(m.messageId)}</div>
-        <div class="contentType">${this.escapeToString(m.contentType)}</div>
-        <div class="subject">${this.escapeToString(m.subject)}</div>
-        <div class="body">${this.escapeToString(m.body)}</div>
+        <div class="msg">
+          <vscode-text-field class="msg-header" value="${this.escapeToString(m.messageId)}" disabled>messageId</vscode-text-field>
+          <vscode-text-field class="msg-header" value="${this.escapeToString(m.contentType)}" disabled>contentType</vscode-text-field>
+          <vscode-text-field class="msg-header" value="${this.escapeToString(m.subject)}" disabled>subject</vscode-text-field>
+          ${this.getActionsHtml(m)}
+          <vscode-text-field class="msg-body" value="${this.escapeToString(m.body)}" disabled>body</vscode-text-field>
+        </div>
       `
     ).join('');
 
@@ -89,7 +102,9 @@ export class MessagesWebView {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <script type="module" src="${toolkitUri}"></script>
           <title>${title}</title>
+          <link rel="stylesheet" href="${styleUri}">
         </head>
         <body>
           <h1>${title}</h1>
@@ -100,6 +115,11 @@ export class MessagesWebView {
         </body>
       </html>
     `;
+  }
+
+  private getActionsHtml(m: IMessage){
+    return '';
+    // return `<vscode-button class="msg-action">Requeue</vscode-button>`;
   }
 
   private escapeToString(input?: any): string {

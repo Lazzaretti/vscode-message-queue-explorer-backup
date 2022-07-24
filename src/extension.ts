@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('message-queue-explorer.addConnection', () => createConnectionQuickPick(store)));
 
 	context.subscriptions.push(vscode.commands.registerCommand('message-queue-explorer.openQueue', (args) => {
-		const panel = new MessagesWebView(connectionFacade);
+		const panel = new MessagesWebView(connectionFacade, context.extensionUri);
 		panel.open(args);
 	}));
 
