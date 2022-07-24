@@ -6,6 +6,8 @@ import { assertUnreachable } from "../helpers";
 import { IChannel, QueueSubType } from "../logic/connections/models/IChannel";
 import { IMessage } from "../logic/models/IMessage";
 
+export type IMessageCommand = "Requeue";
+
 export class ConnectionFacade {
   constructor(private store: Store, private connectionPool: ConnectionPool) {}
 
@@ -28,6 +30,11 @@ export class ConnectionFacade {
       providerType: this.mapType(c.type),
       conectionType: c.type,
     }));
+  }
+
+  async executeCommandOnMessage(messageCommand: IMessageCommand, connectionId: string, channelName: string, messageId: string) {
+    const activeConnection = this.connectionPool.getByConnectionId(connectionId);
+    await activeConnection.executeCommandOnMessage(messageCommand, channelName, messageId);
   }
 
   private mapType(connectionType: ConnectionType): ProviderType {

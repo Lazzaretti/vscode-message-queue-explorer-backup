@@ -8,8 +8,13 @@
 .msg-header {
     opacity: 1;
 }
+
 .msg-action {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
 }
+
 .msg-body {
     grid-column-start: 1;
     grid-column-end: span end;

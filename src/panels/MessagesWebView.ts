@@ -38,11 +38,11 @@ export class MessagesWebView {
     this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
 
     this.panel.webview.onDidReceiveMessage((data) => {
-      switch (data.type) {
-        case "colorSelected": {
-          vscode.window.activeTextEditor?.insertSnippet(
-            new vscode.SnippetString(`#${data.value}`)
-          );
+      switch (data.command) {
+        case "requeue": {
+          this.connectionFacade.executeCommandOnMessage("Requeue", args.connectionId, args.name, data.messageId)
+          .then(() => vscode.window.showInformationMessage("requeued message"))
+          .catch(e => vscode.window.showErrorMessage("Requeue failed: " + JSON.stringify(e)));
           break;
         }
       }
@@ -82,6 +82,7 @@ export class MessagesWebView {
       "dist",
       "toolkit.js", // A toolkit.min.js file is also available
     ]);
+    const mainUri = getUri(webview, this.extensionUri, ["webview-ui", "main.js"]);
     const styleUri = getUri(webview, this.extensionUri, ["webview-ui", "style.css"]);
 
     const content = this.messages.map(
@@ -90,7 +91,7 @@ export class MessagesWebView {
           <vscode-text-field class="msg-header" value="${this.escapeToString(m.messageId)}" disabled>messageId</vscode-text-field>
           <vscode-text-field class="msg-header" value="${this.escapeToString(m.contentType)}" disabled>contentType</vscode-text-field>
           <vscode-text-field class="msg-header" value="${this.escapeToString(m.subject)}" disabled>subject</vscode-text-field>
-          ${this.getActionsHtml(m)}
+          <div class="msg-action">${this.getActionsHtml(m)}</div>
           <vscode-text-field class="msg-body" value="${this.escapeToString(m.body)}" disabled>body</vscode-text-field>
         </div>
       `
@@ -103,13 +104,14 @@ export class MessagesWebView {
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <script type="module" src="${toolkitUri}"></script>
-          <title>${title}</title>
+          <script type="module" src="${mainUri}"></script>
           <link rel="stylesheet" href="${styleUri}">
+          <title>${title}</title>
         </head>
         <body>
           <h1>${title}</h1>
           ${this.isLoading ? "<h2>loading...</h2>" : ""}
-          <article>
+          <article id="messages">
             ${content}
           </article>
         </body>
@@ -118,8 +120,12 @@ export class MessagesWebView {
   }
 
   private getActionsHtml(m: IMessage){
+    if (m.messageId) {
+      if (this.args?.queueSubType === "DeadLetter"){
+        return `<vscode-button class="btn-requeue" data-message-id="${this.escapeToString(m.messageId)}">Requeue</vscode-button>`;
+      }
+    }
     return '';
-    // return `<vscode-button class="msg-action">Requeue</vscode-button>`;
   }
 
   private escapeToString(input?: any): string {

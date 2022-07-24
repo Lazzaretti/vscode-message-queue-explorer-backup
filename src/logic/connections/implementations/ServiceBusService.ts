@@ -1,11 +1,12 @@
 import { PagedAsyncIterableIterator, PageSettings } from "@azure/core-paging";
 import {
   EntitiesResponse,
-  QueueProperties,
   ServiceBusAdministrationClient,
   ServiceBusClient,
-  TopicProperties,
+  ServiceBusReceivedMessage,
+  ServiceBusReceiver,
 } from "@azure/service-bus";
+import { IMessageCommand } from "../../../facade/ConnectionFacade";
 import { IMessage } from "../../models/IMessage";
 import { IActiveConnection } from "../models/IActiveConnection";
 import { IChannel, QueueSubType } from "../models/IChannel";
@@ -91,13 +92,86 @@ export class ServiceBusService implements IActiveConnection {
   async peekMessages(
     queueName: string,
     queueSubType: QueueSubType,
-    amount = 50,
+    amount = 50
   ): Promise<IMessage[]> {
-    const receiver = this.serviceBusClient.createReceiver(queueName, {
-      subQueueType: queueSubType === "DeadLetter" ? "deadLetter" : undefined,
-    });
-    const messages = await receiver.peekMessages(amount);
-    return messages.map(m => ({messageId: m.messageId?.toString(), contentType: m.contentType, subject: m.subject, body: m.body}));
+    // peek does not retrun the messages agina when reusing the same client... -> make separate client
+    // https://github.com/Azure/azure-sdk-for-js/issues/22687
+    let serviceBusClient = null;
+    let receiver = null;
+    try {
+      serviceBusClient = new ServiceBusClient(this.connectionString);
+      receiver = serviceBusClient.createReceiver(queueName, {
+        subQueueType: queueSubType === "DeadLetter" ? "deadLetter" : undefined,
+      });
+      const messages = await receiver.peekMessages(amount, {
+        fromSequenceNumber: 0,
+      });
+
+      return messages.map((m) => ({
+        messageId: m.messageId?.toString(),
+        contentType: m.contentType,
+        subject: m.subject,
+        body: m.body,
+      }));
+    } finally {
+      receiver?.close();
+      serviceBusClient?.close();
+    }
+  }
+
+  async executeCommandOnMessage(
+    messageCommand: IMessageCommand,
+    channelName: string,
+    messageId: string
+  ): Promise<any> {
+    switch (messageCommand) {
+      case "Requeue":
+        return await this.requeueMessage(channelName, messageId);
+    }
+    throw new Error("command not implemented");
+  }
+
+  async requeueMessage(channelName: string, messageId: string) {
+    // peek does not retrun the messages agina when reusing the same client... -> make separate client
+    // https://github.com/Azure/azure-sdk-for-js/issues/22687
+    let serviceBusClient = null;
+    let sender = null;
+    let receiver = null;
+    try {
+      serviceBusClient = new ServiceBusClient(this.connectionString);
+      sender = serviceBusClient.createSender(channelName);
+      receiver = serviceBusClient.createReceiver(channelName, {
+        subQueueType: "deadLetter",
+      });
+
+      const message = await this.getMessageById(receiver, messageId);
+      if (message === null) {
+        throw new Error(
+          `message ${messageId} is not in queue ${channelName} anymore`
+        );
+      }
+
+      await sender.sendMessages(message);
+      await receiver.completeMessage(message);
+    } catch (e) {
+      throw e;
+    } finally {
+      receiver?.close();
+      sender?.close();
+      serviceBusClient?.close();
+    }
+  }
+
+  private async getMessageById(
+    receiver: ServiceBusReceiver,
+    messageId: string
+  ): Promise<ServiceBusReceivedMessage | null> {
+    for await (let message of receiver.getMessageIterator()) {
+      if (message.messageId === messageId) {
+        return message;
+      }
+    }
+    return null;
   }
 
   async close() {
