@@ -7,7 +7,9 @@
 		"vscode": "^1.69.0"
 	},
 	"categories": [
-		"Other"
+		"Other",
+		"Visualization",
+		"Testing"
 	],
 	"activationEvents": [
 		"onView:message-queue-explorer.queueTreeView",
