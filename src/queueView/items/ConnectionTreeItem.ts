@@ -1,24 +1,20 @@
-import * as vscode from 'vscode';
-import * as path from 'path';
-import { MQTreeItem } from './MQTreeItem';
+import * as vscode from "vscode";
+import * as path from "path";
+import { MQTreeItem } from "./MQTreeItem";
 
 export class ConnectionTreeItem extends MQTreeItem {
+  constructor(
+    public readonly connectionId: string,
+    public readonly name: string,
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState
+  ) {
+	const label = `${name}`;
+    super(label, collapsibleState);
 
-	constructor(
-		public readonly connectionId: string,
-		public readonly label: string,
-		public readonly collapsibleState: vscode.TreeItemCollapsibleState
-	) {
-		super(label, collapsibleState);
+	this.iconPath = new vscode.ThemeIcon('plug');
+    this.tooltip = label;
+    this.description = "";
+  }
 
-		this.tooltip = `${this.label}`;
-		this.description = '';
-	}
-
-	// iconPath = {
-	// 	light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
-	// 	dark: path.join(__filename, '..', '..', 'resources', 'dark', 'dependency.svg')
-	// };
-
-	contextValue = 'ConnectionItem';
+  contextValue = "ConnectionItem";
 }

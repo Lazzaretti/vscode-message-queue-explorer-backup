@@ -21,28 +21,11 @@ export class ChannelTreeItem extends MQTreeItem {
     })`;
     super(label, collapsibleState);
 
+    this.iconPath = new vscode.ThemeIcon('symbol-function');
+
     this.tooltip = `type: ${channelType}, status: ${status}`;
     this.description = "";
   }
-
-  iconPath = {
-    light: path.join(
-      __filename,
-      "..",
-      "..",
-      "resources",
-      "light",
-      "dependency.svg"
-    ),
-    dark: path.join(
-      __filename,
-      "..",
-      "..",
-      "resources",
-      "dark",
-      "dependency.svg"
-    ),
-  };
 
   contextValue = "ChannelTreeItem";
 }
