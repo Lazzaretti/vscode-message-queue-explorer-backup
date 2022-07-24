@@ -19,15 +19,13 @@
 		"commands": [
 			{
 				"command": "message-queue-explorer.addConnection",
-				"title": "Add Connection"
+				"title": "Add Connection",
+				"icon": "$(add)"
 			},
 			{
 				"command": "message-queue-explorer.queueTreeView.refresh",
 				"title": "Refresh",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
+				"icon": "$(refresh)"
 			},
 			{
 				"command": "message-queue-explorer.deleteConnection",
