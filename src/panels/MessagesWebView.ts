@@ -81,7 +81,7 @@ export class MessagesWebView {
         <div class="subject">${this.escapeToString(m.subject)}</div>
         <div class="body">${this.escapeToString(m.body)}</div>
       `
-    );
+    ).join('');
 
     webview.html = /*html*/ `
       <!DOCTYPE html>
