@@ -45,7 +45,7 @@
 				{
 					"id": "message-queue-explorer",
 					"title": "Message Queue Explorer",
-					"icon": "resources/MQ.svg"
+					"icon": "resources/MQ-small.svg"
 				}
 			]
 		},
